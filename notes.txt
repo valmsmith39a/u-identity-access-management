@@ -350,3 +350,63 @@ local storage is persistent, in memory in browser. stores even if tab is closed.
 
 Storing JWTs
 
+As long as JWT not expired, should be no problems. 
+
+Store JWT, use JavaScript interface. 
+
+localStorage.setItem("token", jwt)
+
+localStorage store JWTs but there some risks:
+
+Local Storage is domain specific. 
+Example is Cross Site Script
+
+Inject foreign code in website to execute site itself.example, get all keys from localStore, now malicious server has a completely valid credential.
+
+inject foreign code in website to get all keys from localStore and now has a completely valid JWT.
+
+Pull that info into malicious service. 
+
+Unsanitized
+
+Example, what is your favorite book? 
+
+Example: inject a script, if not sanitized, then will execute when run.
+
+Dependencies make sure packages are maintained an vetted by trusted developers.
+
+Never store sensitive information within JWT. 
+Payload can be easily decoded.
+
+JWT should expire frequently. Limited amount of time. Refresh tokens within minutes.
+
+local storage is domain specific and persistent like cookies, but are inaccessily when http only flag is turned on. No JavaScript can access the cookie.
+
+Implement JWT with cookies.
+
+Send JWT 
+
+Authorizatio Header, a string: Bearer : indicates what time of token is included in authorization header. 
+
+Can send Token in Authorization Header.
+
+in Postman can enter a bearer token.
+
+Send request with our token
+
+Now in flask, unpack the header
+
+auth_header = request.headers('Authorization')
+
+check if "authorization" is not in header
+
+then abort with abort(401) # unauthorized
+
+https://github.com/udacity/FSND/tree/master/BasicFlaskAuth
+
+Review
+
+Authentication using JWT 
+  make requests
+  validate/sign own JWTs
+  use within own endpoints 
