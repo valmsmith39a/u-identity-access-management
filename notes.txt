@@ -1,0 +1,352 @@
+Authentication: Who are you?
+Authorization: What are you allowed to do?
+
+3rd party authentication
+
+Adversarial approach to security
+
+Practical examples to better protect systems 
+
+Systems not vulnerable to attackers
+
+Adversary
+  SQL injection
+  Social Engineering
+  Package Vulnerabilities
+  Cross Site Scripting
+  Broken authentication
+  Poorly designed serialization
+
+API endpoints 
+
+Request
+
+https:///www.udacity.com/courses/programming
+
+https: some protocol 
+udacity.com: domain name 
+/courses/programming: resource 
+
+GET, POST, PATCH, DELETE
+
+401 Unauthorized: Server cannot validate the identity of the requested party. Client must pass authentication before access to resource is granted.  
+
+403 Forbidden: Client does not have permission to access resource. Server knows who is making the request but the requesting party has no authorization to access the esource. 
+
+Flask
+
+Postman: test endpoints 
+
+Database 
+
+SQLAlchemy
+
+Object Relational Map to interface with databases. 
+
+Python Decorators: add additional functionality to flask servers 
+  Specify which endpoints we want for specific functions
+
+Identity and Authentication
+
+Identity: Who are you? Who is making the request?
+
+Frontend / API Server 
+
+login request 
+
+compare password 
+
+return response 
+
+tokens: temporary credential stored on client that can be sent with each future request. perform specific actions that might be sensitive. 
+
+learn how to implement 3rd party authentication systems
+
+Username/password pair to authenticate 
+
+We should *never* store plain text password in database 
+
+Compare some representation of password.
+either 200 or 401 http status code
+
+Problems with passwords:
+  user forgets
+  simple passwords
+  common passwords
+  repeat passwords
+  share passwords 
+  passwords compromised
+  incorrectly check 
+  cut corners
+
+Alternative authentication methods
+
+Single Sign-ON 
+  Example: Login with Google/Facebook 
+
+  Trust someone else to answer who you are  
+  User login directly with this service
+
+  Adv:
+    Don't have perform authentication
+    Sign on attempt easier. Services already logged into.
+    Example, logged into facebook, then another service can say you are who you are. 
+
+  Example, log in with Google or Facebook 
+
+Multi-Factor Authentication
+  Layer of trust on top of a password 
+  Something physical/sensitive and secure.
+  Example code sent to cell phone
+  Generate code on device itself: RSA Key, Google Authenticar App
+ 
+Password is the weakest link
+
+Passwordless 
+  Send user id to authenticate
+  code to alternative device
+  user provides that code back to service 
+  
+  Examples: Slack: magic link or Google using cell phone sign in 
+  Biometric authentication 
+  hard to take a part of your body to authenticate
+  Ex. fingerprint, retina scans
+
+OAuth 2.0: Industry standard protocal for authorization: https://oauth.net/2/  
+
+3rd party auth systems 
+
+Why delegeate responsibility? 
+
+Risk:
+  On backend 
+  Passwords can be comnpromised, incorrectly check, cut corners
+
+As system starts to grow and more complexity, interdependencies make it hard to maintain. 
+
+Microservices
+
+Frontend 
+  Puppy directory
+  API server 
+  Calendar service
+
+Authentication should be in a service on it's own
+
+Frontend can communicate with Auth service and pass info to microservices
+
+Token: credential that is temporary, allows frontend who that person is for subsequent requests.
+
+Use 3rd party authentication systems 
+Ex: Auth0, AmazonWebServices, Cognito, Okta, Firebase 
+
+Implement Auth0
+  Frontend interact with a 3rd party service to provide login screen and provide authentication.
+
+  Auth0 is a hosted page provided by Auth0
+
+  User can usee single sign on 
+
+  Once login Auth0 will provide JWT of the authenticated request.  The JWT can be passed on to various services. 
+
+Tenant domain name
+
+User needs to return back to authentication
+
+Must specify which endpoints redirect back to 
+
+Auth service processes the login, gets token. 
+Token used in subsequent request to provide a credential to otherservice to validate service. 
+
+SessionId to server 
+
+Servers validate authentication using a session table.
+Includes session id and user id pair.
+On every request, client provides session id, server makes request to database to see if session id is still valid and if it is, continue. 
+
+But if have a lot of microservices - hundreds of services. Hard to maintain and manage. Latency in request to check a session. Session might change across different parts of the stack and takes time for that change to propagate. 
+
+Want something that is stateless. Se want our server to just know that the token is valid and works. 
+
+JSON web tokens are stateless 
+
+Sent from Auth Service to Frontend to Server. 
+
+Server needs to fetch a public key 1 time from auth service 
+
+Public key stored in the Server to verify that the JWT is valid and we can trust who is making the request. 
+
+Statelessness also solves problem of scalability. 
+
+Ex we have an API server that has a large amount of demand. We'll spin up multiple instances of this same service. JWT may be hitting any of those instances of the same service and since stateless, each of those servers can be confident it's from a authentic user. 
+
+JWT stateless because the authorizing server does not need to maintain state. Server does NOT keep a record of which users are logged in or which JWTs have been issued. Instead, every request is accompanied by a token which the server uses to verify the authenticity of th request. 
+
+JWT Datastructure 
+
+Who is making the request / how can we trust it's valid 
+
+JSON Web Token is a string.
+
+3 parts: header, payload and signature. 
+
+3 parts work together to ensure that the information within JWT is consistent and we can validate the info has not been changed. 
+
+Header, payload and signature is encoded using Base64 algorithm 
+
+Base64 encoding: transformation: string to jumbled letters/numbers. 3 parts help us figure out 1) who is making the request and 2) do we trust the entity making the request. 
+
+Look at each part individually. 
+
+Look at the payload first. 
+
+After base 64 decoding, left with user object. 
+
+Payload: Username, school, role, this info is not secret. the base64 is easily decoded. 
+
+NEVER store sensitive information within data object. 
+
+username tells us who is making the request.
+
+JWT structure 
+
+header.payload.signature 
+
+header { 
+  "alg": "HS256",
+  "typ": "JWT"
+}
+
+By decoding the payload, answer the question of who 
+
+But how to know trust it? Was the JWT was generated by a system that we trust and that the identity 
+
+Validating JWT Authenticiy
+Base64 jumbles up text 
+
+Anyone can create a JWT token 
+
+How to verify authentic and not tampered with? 
+
+Signature: 
+verify the information in JWT not tampered with and came from trusted source. 
+
+SECRET: string store on authentication service and the server that is validating the token. if the secret is not known by the 3rd party, they cannnot sign the information within their payload or header. if header
+
+function(header, payload, SECRET) = Signature
+
+If header or payload changes, the Signature will change too.
+
+Therefore if signature on auth service and signature on server must be the same. If not, we know the data has been tampered with in transit. 
+
+algorithm HMACSHAW245 encoding: commonly used algorithm to use this method of signing. 
+
+Take header and our payload, base64 encode them concatenate with a dot, pass in our secret, to generate a signature/string open that is only valid for the secret, payload and header provided. 
+
+Take the header/payload
+
+heade, payload, secret, only valid. 
+
+Take the header and payload from JWT 
+
+JWT not tampered with and came from a trusted source. 
+
+function (header, payload, SECRET) = Signature
+
+Signature must be the same on Auth Service and Authentication Servcer. 
+
+HMACSHA256(base64encode(header) + "." + base64encode(payload), <<SECRET>>) = T9hkasdlfkjdsfklasjdffshafkdhfaldjkfh (Signature) 
+
+Only valid for the secret, payload and header provided 
+
+Same algorithm used to validate the JWT on the other side.
+
+Take the header/payload from JWT token 
+
+To validate 
+
+We take the header and payload, use our SECRET and we see if our string matches theirs 
+
+import and generate and verify JWTs 
+
+base64 is basic implementation of base64 encoding algorithm
+
+import jwt
+import base64
+
+payload = {'park': 'madison square'}
+algo = 'HS256'
+secret = 'learning'
+
+secret used to encode must match the secret used to decode
+encoded_jwt = jwt.encode(payload, secret, algorithm=algo)
+
+decoded_jwt = jwt.decode(encoded_jwt, secret, verify=True)
+
+can also decode using simple base64 encoding.
+
+JWT is about validation
+
+header, payload and secret
+
+Review:
+
+header, payload and secret
+
+encode
+
+REVIEW:
+
+JWT Structure:
+header.payload.signature
+
+header: base64encoded 
+payload: base64encoded
+signature = HMACSHA256(base64Encode(header) + "." + base64Encode(payload), secret)
+
+To validate:
+Use the algorithm 
+
+# Encode a JWT
+encoded_jwt = jwt.encode(payload, secret, algorithm=algo)
+
+# Decode a JWT
+decoded_jwt = jwt.decode(encoded_jwt, secret, verify=True)
+print(decoded_jwt)
+
+Create valid JWT to authenticate requests 
+
+Auth Service validates, returns JWT as response for future use to a different server.
+
+Don't want user to interact with credentials. 
+
+Frontend will be stored locally in client.
+
+Store JWT in Client
+Get JWT in Client and send request to server 
+
+Both happen within our client
+
+Client is a web application or an be a mobile application or a native device.
+
+local storage 
+
+interface of javascript
+
+See how local storage works 
+
+Browser interface 
+
+Each tab 
+
+Local storage is interface, to keep data within persistent memory.
+
+Set of keys and corresponding value for that key.
+
+Domain specific. Ex udacity.com will access the same local store. 
+
+The 2 local stores to access other site's local store. 
+local storage is persistent, in memory in browser. stores even if tab is closed. 
+
+Storing JWTs
+
