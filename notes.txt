@@ -410,3 +410,163 @@ Authentication using JWT
   make requests
   validate/sign own JWTs
   use within own endpoints 
+
+***
+
+Passwords
+
+***
+
+Passwords are ubiquitous and worst
+
+Passwords need to be stored 
+
+database at risk/passwords can be read
+
+API server could tunnel from API server to db 
+
+data inflight between client/server/database 
+
+How to minimize
+
+**
+Problems with plain text 
+  
+  Storing passwords as plain text is the WORST offense
+
+thing that can go wrong
+
+Bad actors, database/passwords, backup security, SQL injection
+
+SQL injection
+
+Data in flight between services 
+
+Frontend passes to backend server through wifi
+
+if connections are not over encrypted signals then plain text password can be interpreted and read as plain text
+
+SQL injection:
+  unsanitized HTML input 
+  frontend to request data from database without api server 
+
+  Ex
+    username: 'chad'; UPDATE 'users' SET 'password' = '1234'
+  
+  new SQL command executed
+
+  Or SQL commands to append more data in response back to client 
+
+Prevention
+  Always validate inputs
+  Always sanitize inputs 
+  Use ORMs (abstract away interface to database)
+  Use prepared SQL statements 
+    Ex SELECT * from 'users' WHERE 'username' = %S should be processed as a string or throw an error
+
+Exploits
+
+  brute force attacks
+    login request/login results
+
+    prevent: 
+      Rate limit: ex same user trying to enter password multiple times 
+
+      Prevent commonly used passwords 
+
+      Enforce reasonable password security (length of password). 
+
+      Sentences better the single word passwords
+
+Serialize Model (transform data into more easily shared format, ex JSON object) 
+  
+  When get data from database, may get sensitive info 
+
+  When serialize, only serialize critical info, and exclude from serialization. 
+
+  Multiple serializers for different tasks 
+  
+Should log so we can create an audit trail
+
+Login attempts, login sources, requested resources 
+
+Never log Secrets, passwords 
+
+Symetric encyrption:
+  scramble text
+  take a string and scramble the text
+  encryption should be reversible 
+  **Simple Substitution** shift letters by certain number 
+  Simple substitution are easy to crack (letter frequesncy) 
+
+  Polyalphabetic Cipher (subsitution * n)
+
+Encryption in Digital World
+
+Ex 
+
+input 
+ciphertext block 
+algorithm 
+key 
+
+password into function, key used as cypher
+
+key must be kept secret 
+
+3 encrptions algorithms: 
+3DES
+Blowfish
+AES  
+
+Feistel Block Cipher 
+
+F(K, A), concatenated, passed into another function F(K2, A)... 
+
+Encyprtion to solve compromised user tables
+
+Encrypt the password in table 
+
+Should have encrypted version of password 
+
+API server now needs to decryption key to decrypt the password 
+
+bad developer access data they should not 
+
+Asymetric Encrpytion:
+
+Cryptography Python package 
+
+Ex 
+Messages are sent as plain text message 
+
+Messages sent between services
+
+Plain text block encrypted to produce Ciphertext Block 
+Asymetic Encryption: 
+more than 1 key to encrypt/decrypt data 
+
+Encryption using private key
+
+Use public key to decrypt
+
+  Take ciphertext block, input into another function using public key to get the plain text block. 
+
+  Ex HTTPS, TLS/SSL
+
+Need to make sure messages in transit are encrypted 
+
+Hashing: 
+function - 1 way funtion to jumbles text in only 1 direction
+
+Encryption - key to trace back to original string
+
+Hashing - elinate ability to go back to original string
+
+no way for hash to go back to original string 
+
+bcrypt
+scrypt
+
+hashlib 
+
