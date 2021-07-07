@@ -570,3 +570,45 @@ scrypt
 
 hashlib 
 
+Salted hashes
+
+Hashing 
+
+Plaintext block -> One way hash function (bcrypt/scrypt) -> hash 
+
+Rainbow table attack
+
+  same string will always produce the same hash
+
+  create a list of hashes that correspond to a plain text word 
+
+  known as creating rainbow tables
+
+change the inputs so that no 2 passwords are the same in the table 
+
+random string appended to password string, pass through hash algorithm to produce a message digest.
+
+must ensure salts are sufficiently long. must be random for each password.
+
+can use Salt Rounds. 
+
+Salt round takes hash from previous round as input. 
+
+The more rounds performed, the more computatation is required to compute the hash.
+
+# Import the Python Library
+import sys
+
+import bcrypt
+
+password = b"studyhard"
+
+salt = bcrypt.gensalt(14)
+hashed = bcrypt.hashpw(password, salt)
+
+hashed = b'...
+password = b"learningisfun"
+bcrypt.checkpw(password, hashed) => True/False
+
+
+
