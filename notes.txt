@@ -610,5 +610,164 @@ hashed = b'...
 password = b"learningisfun"
 bcrypt.checkpw(password, hashed) => True/False
 
+Authorization
 
+permissions
 
+action: noun
+
+Ex 
+
+get:items, view:doc, query:data
+
+users fall into different categories
+
+Owner, Manager, Consumer 
+
+Ex 
+Owner: get, post delete
+Manager: get, post
+Consumer: get 
+
+Generally, the more people who are part of a role, fewer actions allow them to take. 
+
+User profile, Role, collection of permissions 
+
+New permissions to the user 
+
+Username Password Role 
+chad     kljklkj  1 
+
+RoleID  Role   Permissions
+1       Admin  ['get:items', 'post:items', 'delete:items']
+2       Manager ['get:items', 'post:items']
+
+Authenticating a user 
+
+Frontend -> login request -> Auth Service -> returns a token (includes username and permissionts)
+
+  user = {
+    username: 'chad',
+    permissions: {
+      'get': 'drink',
+      'post': 'drink'
+    }
+
+Pass token to Server -> validate it -> unpack token and check if that permission exists. 
+
+if user has the permission then can return the data wanted, otherwise should return with 403 which is unauthorized.
+
+Auth0
+Can define permissions
+
+Using RBACK in Flask 
+
+Extend @requires_auth decorator 
+
+Ex 
+
+def check_permissions(permission, payload);
+  if 'permissions' not in payload:
+     raise AuthError({
+       'code': 'invalid_claims',
+       'description': 'Permissions not included in JWT.'
+     }, 400)
+
+  if permission not in payload('permissions'):
+    raise AuthError({
+      'code': 'unauthorized',
+      'description': 'Permssion not found.'
+    }, 403)
+
+  return True
+
+def requires_auth(permissions='')
+  def requires_auth(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+      jwt = get_token_auth_header()
+      try: 
+        payload = verify_decode_jwt(jwt)
+
+      except:
+        abort(401)
+
+      check_permissions(permission, payload)
+       return f(payload, *args, **kwargs)
+    return wrapper
+  return requires_auth_decorator
+
+Restricting Features in Frontend 
+
+Ex to decode JWT on frontend 
+
+function parseJwt(token) {
+  var base64Url = token.split('.')[1];
+  var base64 = decdeURIComponent(atob(base64Url).
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+}).join(''));
+
+return JSON.parse(base64);
+};
+
+Explore common techniques by adversaries 
+
+Use Git effectively
+
+Don't want sensitive data locally.
+
+environments 
+
+Replicate data stores locally 
+
+Use fake data 
+
+Sensitive data in production 
+
+Each developer can simulate data store 
+
+Eliminate risk of having data compromoised locally 
+
+Use different branches while developing 
+
+Example to commit to Dev and pull changes from master
+
+Developer A, Developber B
+
+Code Review for Security
+
+Postman Integration Testing 
+
+Hire a friendly hacker 
+
+Penetrattion testing
+
+Phishing
+  Attacker pretends to be someone else and ask for sensitive info credit card numbers etc. 
+  Conducted by email 
+  Clone an entire login page 
+
+Social Engineering 
+
+Good resources 
+
+  OWASP Top 10 
+
+  Subscribe to Vulnerability Monitoring
+
+Review 
+
+  Who making request 
+
+  3rd party auth, hosted login page 
+
+  JWT to perform authentication on service level 
+
+  Common techniques from hackers
+
+  How to mitigate attacks
+
+  Role based permission controls 
+
+    include in JWT 
+ 
